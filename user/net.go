@@ -25,11 +25,11 @@ func CanProceed(rq *http.Request, route string) bool {
 
 // FromRequest returns user from `rq`. If there is no user, an anon user is returned instead.
 func FromRequest(rq *http.Request) *User {
-	cookie, err := rq.Cookie("mycorrhiza_token")
-	if err != nil {
+	username, ok := rq.Header["X-Webauth-User"]
+	if !ok || len(username) < 1 {
 		return EmptyUser()
 	}
-	return ByToken(cookie.Value)
+	return ByName(username[0])
 }
 
 // LogoutFromRequest logs the user in `rq` out and rewrites the cookie in `w`.
