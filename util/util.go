@@ -56,7 +56,11 @@ func RandomString(n int) (string, error) {
 // BeautifulName makes the ugly name beautiful by replacing _ with spaces and using title case.
 func BeautifulName(uglyName string) string {
 	// Why not reuse
-	return util.BeautifulName(uglyName)
+	result := util.BeautifulName(uglyName)
+	for i, replace := range cfg.ReplaceFrom {
+		result = strings.ReplaceAll(result, replace, cfg.ReplaceTo[i])
+	}
+	return result
 }
 
 // CanonicalName makes sure the `name` is canonical. A name is canonical if it is lowercase and all spaces are replaced with underscores.
