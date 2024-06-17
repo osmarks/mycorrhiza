@@ -31,7 +31,7 @@ func SetHeaderLinks() {
 func setDefaultHeaderLinks() {
 	viewutil.HeaderLinks = []viewutil.HeaderLink{
 		{"/recent-changes", "Recent changes"},
-		{"/list", "All hyphae"},
+		{"/list", "All pages"},
 		{"/random", "Random"},
 		{"/help", "Help"},
 		{"/category", "Categories"},

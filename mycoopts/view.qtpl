@@ -28,7 +28,7 @@
 			<p>{%s lc.Get("ui.media_noaudio") %} <a href="/binary/{%s= h.CanonicalName() %}">{%s lc.Get("ui.media_noaudio_link") %}</a></p>
 		</audio>
 	</div>
-
+	
 	{% default %}
 	<div class="binary-container binary-container_with-nothing">
 		<p><a href="/binary/{%s= h.CanonicalName() %}">{%s lc.Get("ui.media_download") %}</a></p>
