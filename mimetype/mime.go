@@ -50,6 +50,8 @@ var mapMime2Ext = map[string]string{
 	"video/webm":               "webm",
 	"audio/mp3":                "mp3",
 	"video/mp4":                "mp4",
+	"application/pdf":          "pdf",
+	"audio/mpeg":               "mp3",
 }
 
 var mapExt2Mime = map[string]string{
@@ -65,4 +67,5 @@ var mapExt2Mime = map[string]string{
 	".webm": "video/webm",
 	".mp3":  "audio/mp3",
 	".mp4":  "video/mp4",
+	".pdf":  "application/pdf",
 }

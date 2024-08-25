@@ -43,6 +43,9 @@ var (
 	TelegramEnabled  bool
 	TelegramBotToken string
 	TelegramBotName  string
+
+	ReplaceFrom []string
+	ReplaceTo   []string
 )
 
 // WikiDir is a full path to the wiki storage directory, which also must be a
@@ -59,6 +62,8 @@ type Config struct {
 	Authorization
 	CustomScripts `comment:"You can specify additional scripts to load on different kinds of pages, delimited by a comma ',' sign."`
 	Telegram      `comment:"You can enable Telegram authorization. Follow these instructions: https://core.telegram.org/widgets/login#setting-up-a-bot"`
+	ReplaceFrom   []string
+	ReplaceTo     []string
 }
 
 // Hyphae is a section of Config which has fields related to special hyphae.
@@ -191,6 +196,8 @@ func ReadConfigFile(path string) error {
 	TelegramBotToken = cfg.TelegramBotToken
 	TelegramBotName = cfg.TelegramBotName
 	TelegramEnabled = (TelegramBotToken != "") && (TelegramBotName != "")
+	ReplaceFrom = cfg.ReplaceFrom
+	ReplaceTo = cfg.ReplaceTo
 
 	// This URL makes much more sense. If no URL is set or the protocol is forgotten, assume HTTP.
 	if URL == "" {
