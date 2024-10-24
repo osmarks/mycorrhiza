@@ -1,13 +1,11 @@
 package auth
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"log"
 	"mime"
 	"net/http"
-	"strings"
 
 	"github.com/bouncepaw/mycorrhiza/viewutil"
 
@@ -29,9 +27,7 @@ func InitAuth(r *mux.Router) {
 	if cfg.AllowRegistration {
 		r.HandleFunc("/register", handlerRegister).Methods(http.MethodPost, http.MethodGet)
 	}
-	if cfg.TelegramEnabled {
-		r.HandleFunc("/telegram-login", handlerTelegramLogin)
-	}
+
 	r.HandleFunc("/login", handlerLogin)
 	r.HandleFunc("/logout", handlerLogout)
 }
@@ -151,75 +147,4 @@ func handlerLogin(w http.ResponseWriter, rq *http.Request) {
 		}
 		http.Redirect(w, rq, "/", http.StatusSeeOther)
 	}
-}
-
-func handlerTelegramLogin(w http.ResponseWriter, rq *http.Request) {
-	// Note there is no lock here.
-	lc := l18n.FromRequest(rq)
-	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	rq.ParseForm()
-	var (
-		values     = rq.URL.Query()
-		username   = strings.ToLower(values.Get("username"))
-		seemsValid = user.TelegramAuthParamsAreValid(values)
-		err        = user.Register(
-			username,
-			"", // Password matters not
-			"editor",
-			"telegram",
-			false,
-		)
-	)
-	// If registering a user via Telegram failed, because a Telegram user with this name
-	// has already registered, then everything is actually ok!
-	if user.HasUsername(username) && user.ByName(username).Source == "telegram" {
-		err = nil
-	}
-
-	if !seemsValid {
-		err = errors.New("Wrong parameters")
-	}
-
-	if err != nil {
-		log.Printf("Failed to register ‘%s’ using Telegram: %s", username, err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = io.WriteString(
-			w,
-			viewutil.Base(
-				viewutil.MetaFrom(w, rq),
-				lc.Get("ui.error"),
-				fmt.Sprintf(
-					`<main class="main-width"><p>%s</p><p>%s</p><p><a href="/login">%s<a></p></main>`,
-					lc.Get("auth.error_telegram"),
-					err.Error(),
-					lc.Get("auth.go_login"),
-				),
-				map[string]string{},
-			),
-		)
-		return
-	}
-
-	errmsg := user.LoginDataHTTP(w, username, "")
-	if errmsg != nil {
-		log.Printf("Failed to login ‘%s’ using Telegram: %s", username, err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		_, _ = io.WriteString(
-			w,
-			viewutil.Base(
-				viewutil.MetaFrom(w, rq),
-				"Error",
-				fmt.Sprintf(
-					`<main class="main-width"><p>%s</p><p>%s</p><p><a href="/login">%s<a></p></main>`,
-					lc.Get("auth.error_telegram"),
-					err.Error(),
-					lc.Get("auth.go_login"),
-				),
-				map[string]string{},
-			),
-		)
-		return
-	}
-	log.Printf("Authorize ‘%s’ from Telegram", username)
-	http.Redirect(w, rq, "/", http.StatusSeeOther)
 }

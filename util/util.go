@@ -3,10 +3,12 @@ package util
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"github.com/bouncepaw/mycorrhiza/files"
 	"log"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/bouncepaw/mycorrhiza/files"
 
 	"git.sr.ht/~bouncepaw/mycomarkup/v5/util"
 	"github.com/bouncepaw/mycorrhiza/cfg"
@@ -153,4 +155,10 @@ func IsRevHash(revHash string) bool {
 		return false
 	}
 	return true
+}
+
+func GetMotd() string {
+	now := time.Now().UTC().Unix()
+	dayIndex := now / 86400
+	return cfg.Motds[dayIndex%int64(len(cfg.Motds))]
 }

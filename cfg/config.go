@@ -46,6 +46,8 @@ var (
 
 	ReplaceFrom []string
 	ReplaceTo   []string
+
+	Motds []string
 )
 
 // WikiDir is a full path to the wiki storage directory, which also must be a
@@ -64,6 +66,7 @@ type Config struct {
 	Telegram      `comment:"You can enable Telegram authorization. Follow these instructions: https://core.telegram.org/widgets/login#setting-up-a-bot"`
 	ReplaceFrom   []string
 	ReplaceTo     []string
+	Motds         []string
 }
 
 // Hyphae is a section of Config which has fields related to special hyphae.
@@ -153,17 +156,17 @@ func ReadConfigFile(path string) error {
 			// Save the default configuration
 			err = f.ReflectFrom(cfg)
 			if err != nil {
-				return fmt.Errorf("Failed to serialize the config: %w", err)
+				return fmt.Errorf("failed to serialize the config: %w", err)
 			}
 
 			// Disable key-value auto-aligning, but retain spaces around '=' sign
 			ini.PrettyFormat = false
 			ini.PrettyEqual = true
 			if err = f.SaveTo(path); err != nil {
-				return fmt.Errorf("Failed to save the config file: %w", err)
+				return fmt.Errorf("failed to save the config file: %w", err)
 			}
 		} else {
-			return fmt.Errorf("Failed to open the config file: %w", err)
+			return fmt.Errorf("failed to open the config file: %w", err)
 		}
 	}
 
@@ -198,6 +201,7 @@ func ReadConfigFile(path string) error {
 	TelegramEnabled = (TelegramBotToken != "") && (TelegramBotName != "")
 	ReplaceFrom = cfg.ReplaceFrom
 	ReplaceTo = cfg.ReplaceTo
+	Motds = cfg.Motds
 
 	// This URL makes much more sense. If no URL is set or the protocol is forgotten, assume HTTP.
 	if URL == "" {

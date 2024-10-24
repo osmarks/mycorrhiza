@@ -100,6 +100,7 @@ type BaseData struct {
 	Title          string // TODO: remove
 	Body           string // TODO: remove
 	BodyAttributes map[string]string
+	Motd           string
 }
 
 func (bd *BaseData) withBaseValues(meta Meta, headerLinks []HeaderLink, commonScripts []string) {
@@ -123,6 +124,7 @@ func Base(meta Meta, title, body string, bodyAttributes map[string]string, headE
 		EditScripts:    cfg.EditScripts,
 		Body:           body,
 		BodyAttributes: bodyAttributes,
+		Motd:           util.GetMotd(),
 	})
 	if err != nil {
 		log.Println(err)

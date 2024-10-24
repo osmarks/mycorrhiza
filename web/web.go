@@ -7,7 +7,6 @@ import (
 	"net/url"
 
 	"github.com/bouncepaw/mycorrhiza/admin"
-	"github.com/bouncepaw/mycorrhiza/settings"
 	"github.com/bouncepaw/mycorrhiza/auth"
 	"github.com/bouncepaw/mycorrhiza/backlinks"
 	"github.com/bouncepaw/mycorrhiza/categories"
@@ -16,6 +15,7 @@ import (
 	"github.com/bouncepaw/mycorrhiza/hypview"
 	"github.com/bouncepaw/mycorrhiza/interwiki"
 	"github.com/bouncepaw/mycorrhiza/misc"
+	"github.com/bouncepaw/mycorrhiza/settings"
 
 	"github.com/gorilla/mux"
 
@@ -31,7 +31,7 @@ func Handler() http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, rq *http.Request) {
 			util.PrepareRq(rq)
 			w.Header().Add("Content-Security-Policy",
-				"default-src 'self' telegram.org *.telegram.org; "+
+				"default-src 'self'; "+
 					"img-src * data:; media-src *; style-src *; font-src * data:")
 			next.ServeHTTP(w, rq)
 		})
