@@ -137,7 +137,7 @@ func StreamMedia(qw422016 *qt422016.Writer, h *hyphae.MediaHypha, lc *l18n.Local
 		qw422016.N().S(`</a></p>
 		</audio>
 	</div>
-
+	
 	`)
 //line mycoopts/view.qtpl:32
 	default:
