@@ -107,6 +107,7 @@ func (bd *BaseData) withBaseValues(meta Meta, headerLinks []HeaderLink, commonSc
 	bd.Meta = meta
 	bd.HeaderLinks = headerLinks
 	bd.CommonScripts = commonScripts
+	bd.Motd = util.GetMotd()
 }
 
 // Base is a temporary wrapper around BaseEn and BaseRu, meant to facilitate the migration from qtpl.
