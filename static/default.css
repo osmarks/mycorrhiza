@@ -153,7 +153,7 @@ article pre.codeblock { padding:.5rem; white-space: pre-wrap; }
 .binary-container { width: 100%; text-align: center; }
 .binary-container_with-img img,
 .binary-container_with-video video,
-.binary-container_with-audio audio { max-width: 100%; max-height: 30em; width: auto; }
+.binary-container_with-audio audio { max-width: 100%; width: auto; }
 
 .subhyphae__title { padding-bottom: .5rem; clear: both; }
 .navi-title { padding-bottom: .5rem; margin: .25rem 0; }
