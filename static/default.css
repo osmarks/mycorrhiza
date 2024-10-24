@@ -28,6 +28,7 @@ header { width: 100%; display: flex; }
 }
 .logo img {
 	height: 4em;
+	width: 4.45em;
 }
 .logo .ominous {
 	width: 8em;
