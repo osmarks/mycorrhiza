@@ -1,3 +1,30 @@
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://osmarks.net/assets/titillium-web.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Titillium Web';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('https://osmarks.net/assets/titillium-web.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Iosevka';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://osmarks.net/assets/iosevka.woff2') format('woff2');
+    unicode-range: U+0000-00C0, U+A2-A9, U+AC-AE, U+00D7, U+00F7, U+FEFF, U+FFFD;
+}
+
 .non-existent-hypha__way {
 	margin-top: 0.5rem;
 	margin-bottom: 2rem;
@@ -21,7 +48,7 @@ ol:not(.mycomarkup-doc ol) a:hover { text-decoration: underline; }
 /* General element positions, from small to big */
 /* Phones and whatnot */
 body { display: grid; row-gap: .5rem; }
-header { width: 100%; display: flex; }
+header { width: 100%; display: flex; font-family: 'Iosevka', sans-serif; }
 .logo {
 	padding-left: 3em;
 	display: flex;
@@ -33,7 +60,7 @@ header { width: 100%; display: flex; }
 .logo .ominous {
 	width: 8em;
 	align-items: center;
-	display: flex; 
+	display: flex;
 	padding-left: 0.5em;
 }
 .logo .ominous span {
@@ -106,7 +133,7 @@ header { width: 100%; display: flex; }
 
 *, *::before, *::after {box-sizing: border-box;}
 html { height:100%; padding:0; }
-body { margin: 0; font-size:16px; font-family: sans-serif; color: black; }
+body { margin: 0; font-size:16px; font-family: 'Titillium Web', sans-serif; color: black; }
 input, kbd { font: inherit; color: inherit; }
 textarea {font-size:16px; font-family: inherit; line-height: 150%; }
 
@@ -132,8 +159,8 @@ blockquote { margin: 0; padding-left: .75rem; }
 .wikilink_mailto { background: transparent left no-repeat url("/static/icon/mailto-proto.svg"); }
 
 article { overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; line-height: 150%; }
-main h1 { margin: .5rem 0 0 0; }
-main h2, main h3, main h4, main h5, main h6 { margin: 1.5rem 0 0 0; clear: both; }
+main h1 { margin: .5rem 0 0 0; font-family: Iosevka, sans-serif; }
+main h2, main h3, main h4, main h5, main h6 { margin: 1.5rem 0 0 0; clear: both; font-family: Iosevka, sans-serif; }
 .heading__link { text-decoration: none; display: inline-block; }
 .heading__link::after { width: 1rem; content: "§"; color: transparent; }
 .heading__link:hover::after, .heading__link:active::after { color: #999; }
@@ -248,7 +275,7 @@ a:visited, .wikilink_external:visited { color: #ffb86c; }
 input[type="text"], input[type="password"],
 ::-webkit-file-upload-button,
 .btn,
-article code, 
+article code,
 article .codeblock,
 .history__entry,
 .upload-amnt,
@@ -342,7 +369,7 @@ kbd {
 	transform: translate(-50%, 0);
 
 	background-color: #fff;
-	
+
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
