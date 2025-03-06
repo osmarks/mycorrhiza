@@ -99,9 +99,6 @@ If you rename .prevnext, change the docs too.
 		{% endif %}
 
 		{% if cfg.UseAuth && util.IsProfileName(h.CanonicalName()) && meta.U.Name == strings.TrimPrefix(h.CanonicalName(), cfg.UserHypha + "/") %}
-		<div class="btn btn_navititle">
-			<a class="btn__link_navititle" href="/logout">{%s lc.Get("ui.logout_link") %}</a>
-		</div>
 		{% if meta.U.Group == "admin" %}
 		<div class="btn btn_navititle">
 			<a class="btn__link_navititle" href="/admin">{%s lc.Get("ui.admin_panel") %}<a>

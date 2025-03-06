@@ -1,27 +1,27 @@
 @font-face {
-    font-family: 'Titillium Web';
+    font-family: 'osmarks-primary';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('https://osmarks.net/assets/titillium-web.woff2') format('woff2');
+    src: url('https://osmarks.net/assets/osmarks-primary.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: 'Titillium Web';
+    font-family: 'osmarks-primary';
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src: url('https://osmarks.net/assets/titillium-web.woff2') format('woff2');
+    src: url('https://osmarks.net/assets/osmarks-primary.woff2') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-    font-family: 'Iosevka';
+    font-family: 'osmarks-mono';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('https://osmarks.net/assets/iosevka.woff2') format('woff2');
+    src: url('https://osmarks.net/assets/osmarks-mono.woff2') format('woff2');
     unicode-range: U+0000-00C0, U+A2-A9, U+AC-AE, U+00D7, U+00F7, U+FEFF, U+FFFD;
 }
 
@@ -48,7 +48,7 @@ ol:not(.mycomarkup-doc ol) a:hover { text-decoration: underline; }
 /* General element positions, from small to big */
 /* Phones and whatnot */
 body { display: grid; row-gap: .5rem; }
-header { width: 100%; display: flex; font-family: 'Iosevka', sans-serif; }
+header { width: 100%; display: flex; font-family: osmarks-mono, sans-serif; }
 .logo {
 	padding-left: 3em;
 	display: flex;
@@ -133,7 +133,7 @@ header { width: 100%; display: flex; font-family: 'Iosevka', sans-serif; }
 
 *, *::before, *::after {box-sizing: border-box;}
 html { height:100%; padding:0; }
-body { margin: 0; font-size:16px; font-family: 'Titillium Web', sans-serif; color: black; }
+body { margin: 0; font-size:16px; font-family: 'osmarks-primary', sans-serif; color: black; }
 input, kbd { font: inherit; color: inherit; }
 textarea {font-size:16px; font-family: inherit; line-height: 150%; }
 
@@ -159,14 +159,14 @@ blockquote { margin: 0; padding-left: .75rem; }
 .wikilink_mailto { background: transparent left no-repeat url("/static/icon/mailto-proto.svg"); }
 
 article { overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; line-height: 150%; }
-main h1 { margin: .5rem 0 0 0; font-family: Iosevka, sans-serif; }
-main h2, main h3, main h4, main h5, main h6 { margin: 1.5rem 0 0 0; clear: both; font-family: Iosevka, sans-serif; }
+main h1 { margin: .5rem 0 0 0; font-family: osmarks-mono, sans-serif; }
+main h2, main h3, main h4, main h5, main h6 { margin: 1.5rem 0 0 0; clear: both; font-family: osmarks-mono, sans-serif; }
 .heading__link { text-decoration: none; display: inline-block; }
 .heading__link::after { width: 1rem; content: "§"; color: transparent; }
 .heading__link:hover::after, .heading__link:active::after { color: #999; }
 article p { margin: .5rem 0; }
 article ul, ol { padding-left: 1.5rem; margin: .5rem 0; }
-article code { padding: .1rem .3rem; font-size: 90%; font-family: 'Menlo', 'PT Mono', monospace; }
+article code { padding: .1rem .3rem; font-size: 90%; font-family: osmarks-mono, 'Menlo', 'PT Mono', monospace; }
 article pre.codeblock { padding:.5rem; white-space: pre-wrap; }
 .codeblock code {padding:0; font-size:15px;}
 .transclusion { margin-bottom: .25rem; clear: both; }
