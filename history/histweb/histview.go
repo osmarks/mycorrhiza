@@ -4,19 +4,21 @@ package histweb
 import (
 	"embed"
 	"fmt"
-	"github.com/bouncepaw/mycorrhiza/cfg"
-	"github.com/bouncepaw/mycorrhiza/files"
-	"github.com/bouncepaw/mycorrhiza/history"
-	"github.com/bouncepaw/mycorrhiza/hyphae"
-	"github.com/bouncepaw/mycorrhiza/util"
-	"github.com/bouncepaw/mycorrhiza/viewutil"
-	"github.com/gorilla/mux"
 	"html/template"
-	"log"
+	"log/slog"
 	"net/http"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/bouncepaw/mycorrhiza/history"
+	"github.com/bouncepaw/mycorrhiza/internal/cfg"
+	"github.com/bouncepaw/mycorrhiza/internal/files"
+	"github.com/bouncepaw/mycorrhiza/internal/hyphae"
+	"github.com/bouncepaw/mycorrhiza/util"
+	"github.com/bouncepaw/mycorrhiza/web/viewutil"
+
+	"github.com/gorilla/mux"
 )
 
 func InitHandlers(rtr *mux.Router) {
@@ -81,7 +83,9 @@ func handlerHistory(w http.ResponseWriter, rq *http.Request) {
 	if err == nil {
 		list = history.WithRevisions(hyphaName, revs)
 	}
-	log.Println("Found", len(revs), "revisions for", hyphaName)
+
+	// TODO: extra log, not needed?
+	slog.Info("Found revisions", "hyphaName", hyphaName, "n", len(revs), "err", err)
 
 	historyView(viewutil.MetaFrom(w, rq), hyphaName, list)
 }

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bouncepaw/mycorrhiza/cfg"
+	"github.com/bouncepaw/mycorrhiza/internal/cfg"
 
 	"github.com/gorilla/feeds"
 )

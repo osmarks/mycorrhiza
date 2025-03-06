@@ -3,26 +3,27 @@ package main
 import (
 	"bufio"
 	_ "embed"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"os"
 	"path/filepath"
 
-	"golang.org/x/term"
+	"github.com/bouncepaw/mycorrhiza/internal/cfg"
+	"github.com/bouncepaw/mycorrhiza/internal/files"
+	"github.com/bouncepaw/mycorrhiza/internal/user"
+	"github.com/bouncepaw/mycorrhiza/internal/version"
 
-	"github.com/bouncepaw/mycorrhiza/cfg"
-	"github.com/bouncepaw/mycorrhiza/files"
-	"github.com/bouncepaw/mycorrhiza/user"
-	"github.com/bouncepaw/mycorrhiza/version"
+	"golang.org/x/term"
 )
 
 // CLI options are read and parsed here.
 
 // printHelp prints the help message.
 func printHelp() {
-	fmt.Fprintf(
+	_, _ = fmt.Fprintf(
 		flag.CommandLine.Output(),
 		"Usage: %s WIKI_PATH\n",
 		os.Args[0],
@@ -31,7 +32,7 @@ func printHelp() {
 }
 
 // parseCliArgs parses CLI options and sets several important global variables. Call it early.
-func parseCliArgs() {
+func parseCliArgs() error {
 	var createAdminName string
 	var versionFlag bool
 
@@ -42,31 +43,38 @@ func parseCliArgs() {
 	flag.Parse()
 
 	if versionFlag {
-		fmt.Println("Mycorrhiza Wiki", version.Long)
+		slog.Info("Running Mycorrhiza Wiki", "version", version.Long)
 		os.Exit(0)
 	}
 
 	args := flag.Args()
 	if len(args) == 0 {
-		log.Fatal("error: pass a wiki directory")
+		slog.Error("Pass a wiki directory")
+		return errors.New("wiki directory not passed")
 	}
 
 	wikiDir, err := filepath.Abs(args[0])
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to take absolute filepath of wiki directory",
+			"path", args[0], "err", err)
+		return err
 	}
 
 	cfg.WikiDir = wikiDir
 
 	if createAdminName != "" {
-		createAdminCommand(createAdminName)
+		if err := createAdminCommand(createAdminName); err != nil {
+			os.Exit(1)
+		}
 		os.Exit(0)
 	}
+	return nil
 }
 
-func createAdminCommand(name string) {
+func createAdminCommand(name string) error {
 	if err := files.PrepareWikiRoot(); err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to prepare wiki root", "err", err)
+		return err
 	}
 	cfg.UseAuth = true
 	cfg.AllowRegistration = true
@@ -74,11 +82,14 @@ func createAdminCommand(name string) {
 
 	password, err := askPass("Password")
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to prompt password", "err", err)
+		return err
 	}
 	if err := user.Register(name, password, "admin", "local", true); err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to register admin", "err", err)
+		return err
 	}
+	return nil
 }
 
 func askPass(prompt string) (string, error) {

@@ -3,15 +3,15 @@ package util
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"log"
+	"log/slog"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/bouncepaw/mycorrhiza/files"
+	"github.com/bouncepaw/mycorrhiza/internal/cfg"
+	"github.com/bouncepaw/mycorrhiza/internal/files"
 
 	"git.sr.ht/~bouncepaw/mycomarkup/v5/util"
-	"github.com/bouncepaw/mycorrhiza/cfg"
 )
 
 // PrepareRq strips the trailing / in rq.URL.Path. In the future it might do more stuff for making all request structs uniform.
@@ -33,6 +33,7 @@ func ShorterPath(path string) string {
 }
 
 // HTTP404Page writes a 404 error in the status, needed when no content is found on the page.
+// TODO: demolish
 func HTTP404Page(w http.ResponseWriter, page string) {
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
 	w.WriteHeader(http.StatusNotFound)
@@ -40,6 +41,7 @@ func HTTP404Page(w http.ResponseWriter, page string) {
 }
 
 // HTTP200Page wraps some frequently used things for successful 200 responses.
+// TODO: demolish
 func HTTP200Page(w http.ResponseWriter, page string) {
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
 	w.WriteHeader(http.StatusOK)
@@ -85,7 +87,7 @@ func HyphaNameFromRq(rq *http.Request, actions ...string) string {
 			return CanonicalName(strings.TrimPrefix(p, "/"+action+"/"))
 		}
 	}
-	log.Println("HyphaNameFromRq: this request is invalid, fall back to home hypha")
+	slog.Info("HyphaNameFromRq: this request is invalid, fall back to home hypha")
 	return cfg.HomeHypha
 }
 
