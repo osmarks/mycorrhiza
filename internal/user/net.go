@@ -20,6 +20,9 @@ func CanProceed(rq *http.Request, route string) bool {
 
 // FromRequest returns user from `rq`. If there is no user, an anon user is returned instead.
 func FromRequest(rq *http.Request) *User {
+	if cfg.OverrideLogin != "" {
+		return ByName(cfg.OverrideLogin)
+	}
 	username, ok := rq.Header["X-Webauth-User"]
 	if !ok || len(username) < 1 {
 		return EmptyUser()

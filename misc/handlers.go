@@ -57,11 +57,12 @@ func handlerList(w http.ResponseWriter, rq *http.Request) {
 	}
 	close(hyphaNames)
 	for hyphaName := range sortedHypha {
+		metadata := backlinks.MetadataFor(hyphaName)
 		switch h := hyphae.ByName(hyphaName).(type) {
 		case *hyphae.TextualHypha:
-			entries = append(entries, listDatum{h.CanonicalName(), ""})
+			entries = append(entries, listDatum{h.CanonicalName(), "", metadata})
 		case *hyphae.MediaHypha:
-			entries = append(entries, listDatum{h.CanonicalName(), filepath.Ext(h.MediaFilePath())[1:]})
+			entries = append(entries, listDatum{h.CanonicalName(), filepath.Ext(h.MediaFilePath())[1:], metadata})
 		}
 	}
 	viewList(viewutil.MetaFrom(w, rq), entries)
@@ -176,10 +177,16 @@ func handlerTitleSearch(w http.ResponseWriter, rq *http.Request) {
 		query       = rq.FormValue("q")
 		hyphaName   = util.CanonicalName(query)
 		_, nameFree = hyphae.AreFreeNames(hyphaName)
-		results     []string
+		results     []listDatum
 	)
-	for hyphaName := range shroom.YieldHyphaNamesContainingString(query) {
-		results = append(results, hyphaName)
+	for _, hyphaName := range backlinks.Search(query) {
+		metadata := backlinks.MetadataFor(hyphaName)
+		switch h := hyphae.ByName(hyphaName).(type) {
+		case *hyphae.TextualHypha:
+			results = append(results, listDatum{h.CanonicalName(), "", metadata})
+		case *hyphae.MediaHypha:
+			results = append(results, listDatum{h.CanonicalName(), filepath.Ext(h.MediaFilePath())[1:], metadata})
+		}
 	}
 	w.WriteHeader(http.StatusOK)
 	viewTitleSearch(viewutil.MetaFrom(w, rq), query, hyphaName, !nameFree, results)

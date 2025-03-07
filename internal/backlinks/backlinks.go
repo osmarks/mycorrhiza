@@ -2,12 +2,18 @@
 package backlinks
 
 import (
-	"github.com/bouncepaw/mycorrhiza/internal/hyphae"
 	"log/slog"
 	"os"
 	"sort"
+	"time"
+	"strings"
+	"unicode"
 
 	"github.com/bouncepaw/mycorrhiza/util"
+	"github.com/bouncepaw/mycorrhiza/internal/hyphae"
+	"github.com/bouncepaw/mycorrhiza/history"
+	"github.com/rivo/uniseg"
+	"github.com/dchest/stemmer/porter2"
 )
 
 // yieldHyphaBacklinks gets backlinks for the desired hypha, sorts and yields them one by one.
@@ -38,20 +44,129 @@ func RunBacklinksConveyor() {
 	}
 }
 
+var ZeroTime time.Time
+
+type Metadata struct {
+	Outlinks []string
+	Bytes    int
+	Words    int
+	Updated  time.Time
+}
+
 var backlinkIndex = make(map[string]linkSet)
+var forwardIndex = make(map[string]Metadata)
+var invertedIndex = make(map[string]map[string]int)
+
+func scrubInvertedIndexEntry(hyphaName string, tokens []string) {
+	for _, token := range tokens {
+		if tmap, exists := invertedIndex[token]; exists {
+			delete(tmap, hyphaName)
+		}
+	}
+}
+
+func writeTokensToInvertedIndex(hyphaName string, tokens []string) {
+	for _, token := range tokens {
+		if tmap, exists := invertedIndex[token]; exists {
+			tmap[hyphaName] += 1
+		} else {
+			tmap := make(map[string]int)
+			tmap[hyphaName] = 1
+			invertedIndex[token] = tmap
+		}
+	}
+}
+
+func containsAlnum(s string) bool {
+	for _, c := range s {
+		if unicode.IsLetter(c) || unicode.IsNumber(c) {
+			return true
+		}
+	}
+
+    return false
+}
+
+func tokenize(s string) []string {
+	eng := porter2.Stemmer
+
+	tokens := make([]string, 0)
+	state := -1
+	remainder := s
+	var c string
+	for len(remainder) > 0 {
+		c, remainder, state = uniseg.FirstWordInString(remainder, state)
+		if containsAlnum(c) {
+			token := eng.Stem(strings.ToLower(c))
+			tokens = append(tokens, token)
+		}
+	}
+
+	return tokens
+}
+
+func generateMetadata(h hyphae.Hypha, content string) {
+	tokens := tokenize(content)
+
+	meta := Metadata{
+		Outlinks: extractHyphaLinksFromContent(h.CanonicalName(), content),
+		Bytes:    len(content),
+		Words:    len(tokens),
+	}
+	forwardIndex[h.CanonicalName()] = meta
+}
+
+func updateRevTimestamp(h hyphae.Hypha, newTime time.Time) {
+	if _, exists := forwardIndex[h.CanonicalName()]; exists {
+		// ??? Golang ?????
+		meta := forwardIndex[h.CanonicalName()]
+		meta.Updated = newTime
+		forwardIndex[h.CanonicalName()] = meta
+	}
+}
 
 // IndexBacklinks traverses all text hyphae, extracts links from them and forms an initial index. Call it when indexing and reindexing hyphae.
 func IndexBacklinks() {
 	// It is safe to ignore the mutex, because there is only one worker.
-	for h := range hyphae.FilterHyphaeWithText(hyphae.YieldExistingHyphae()) {
-		foundLinks := extractHyphaLinksFromContent(h.CanonicalName(), fetchText(h))
+	for h := range hyphae.YieldExistingHyphae() {
+		content := fetchText(h)
+		foundLinks := extractHyphaLinksFromContent(h.CanonicalName(), content)
 		for _, link := range foundLinks {
 			if _, exists := backlinkIndex[link]; !exists {
 				backlinkIndex[link] = make(linkSet)
 			}
 			backlinkIndex[link][h.CanonicalName()] = struct{}{}
 		}
+		generateMetadata(h, content)
+		if revs, err := history.Revisions(h.CanonicalName()); err == nil {
+			// sorted newest first
+			if len(revs) > 0 {
+				updateRevTimestamp(h, revs[0].Time)
+			}
+		}
+
+		writeTokensToInvertedIndex(h.CanonicalName(), tokenize(util.BeautifulName(h.CanonicalName())))
+		writeTokensToInvertedIndex(h.CanonicalName(), tokenize(content))
 	}
+}
+
+func Search(query string) []string {
+	tokens := tokenize(query)
+	result := make(map[string]int)
+	for _, token := range tokens {
+		if documents, exists := invertedIndex[token]; exists {
+			for name, termFrequency := range documents {
+				result[name] += termFrequency
+			}
+		}
+	}
+	// TODO: actually use the tf
+	sortedResult := make([]string, 0)
+	for name, _ := range result {
+		sortedResult = append(sortedResult, name)
+	}
+	sort.Strings(sortedResult)
+	return sortedResult
 }
 
 // BacklinksCount returns the amount of backlinks to the hypha. Pass canonical names.
@@ -68,6 +183,10 @@ func BacklinksFor(hyphaName string) []string {
 		backlinks = append(backlinks, b)
 	}
 	return backlinks
+}
+
+func MetadataFor(hyphaName string) Metadata {
+	return forwardIndex[hyphaName]
 }
 
 func Orphans() []string {
@@ -124,6 +243,8 @@ type backlinkIndexEdit struct {
 	name     string
 	oldLinks []string
 	newLinks []string
+	content string
+	oldContent string
 }
 
 // apply changes backlink index respective to the operation data
@@ -143,12 +264,20 @@ func (op backlinkIndexEdit) apply() {
 			backlinkIndex[link][op.name] = struct{}{}
 		}
 	}
+	hyp := hyphae.ByName(op.name)
+	generateMetadata(hyp, op.content)
+	// wrong, but close enough
+	updateRevTimestamp(hyp, time.Now())
+
+	scrubInvertedIndexEntry(op.name, tokenize(op.oldContent))
+	writeTokensToInvertedIndex(op.name, tokenize(op.content))
 }
 
 // backlinkIndexDeletion contains data for backlink index update after a hypha deletion
 type backlinkIndexDeletion struct {
-	name  string
-	links []string
+	name   string
+	links  []string
+	content string
 }
 
 // apply changes backlink index respective to the operation data
@@ -158,6 +287,10 @@ func (op backlinkIndexDeletion) apply() {
 			delete(lSet, op.name)
 		}
 	}
+	delete(forwardIndex, op.name)
+
+	scrubInvertedIndexEntry(op.name, tokenize(op.content))
+	scrubInvertedIndexEntry(op.name, tokenize(util.BeautifulName(op.name)))
 }
 
 // backlinkIndexRenaming contains data for backlink index update after a hypha renaming
@@ -165,6 +298,7 @@ type backlinkIndexRenaming struct {
 	oldName string
 	newName string
 	links   []string
+	content string
 }
 
 // apply changes backlink index respective to the operation data
@@ -175,4 +309,9 @@ func (op backlinkIndexRenaming) apply() {
 			backlinkIndex[link][op.newName] = struct{}{}
 		}
 	}
+
+	scrubInvertedIndexEntry(op.oldName, tokenize(op.content))
+	scrubInvertedIndexEntry(op.oldName, tokenize(util.BeautifulName(op.oldName)))
+	writeTokensToInvertedIndex(op.newName, tokenize(op.content))
+	writeTokensToInvertedIndex(op.newName, tokenize(util.BeautifulName(op.newName)))
 }

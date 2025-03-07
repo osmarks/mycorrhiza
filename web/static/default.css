@@ -44,6 +44,7 @@
 ol:not(.mycomarkup-doc ol) a { text-decoration: none; display: inline-block; padding: .25rem; }
 ol:not(.mycomarkup-doc ol) a:hover { text-decoration: underline; }
 .media-type-badge { font-size: smaller; color: #999; }
+.media-type-badge:not(:first-of-type)::before { content: " • "; }
 
 /* General element positions, from small to big */
 /* Phones and whatnot */

@@ -50,8 +50,6 @@ func main() {
 	// TODO: keep all crashes in main rather than somewhere there
 	viewutil.Init()
 	hyphae.Index(files.HyphaeDir())
-	backlinks.IndexBacklinks()
-	go backlinks.RunBacklinksConveyor()
 	user.InitUserDatabase()
 	if err := history.Start(); err != nil {
 		os.Exit(1)
@@ -66,6 +64,8 @@ func main() {
 	if err := interwiki.Init(); err != nil {
 		os.Exit(1)
 	}
+	backlinks.IndexBacklinks()
+	go backlinks.RunBacklinksConveyor()
 
 	// Static files:
 	static.InitFS(files.StaticFiles())

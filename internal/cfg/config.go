@@ -48,6 +48,8 @@ var (
 	ReplaceTo   []string
 
 	Motds []string
+
+	OverrideLogin string
 )
 
 // WikiDir is a full path to the wiki storage directory, which also must be a
@@ -67,6 +69,7 @@ type Config struct {
 	ReplaceFrom   []string
 	ReplaceTo     []string
 	Motds         []string
+	OverrideLogin string
 }
 
 // Hyphae is a section of Config which has fields related to special hyphae.
@@ -202,6 +205,7 @@ func ReadConfigFile(path string) error {
 	ReplaceFrom = cfg.ReplaceFrom
 	ReplaceTo = cfg.ReplaceTo
 	Motds = cfg.Motds
+	OverrideLogin = cfg.OverrideLogin
 
 	// This URL makes much more sense. If no URL is set or the protocol is forgotten, assume HTTP.
 	if URL == "" {

@@ -10,7 +10,10 @@
 		<ol>
         {{range .Results}}
 			<li>
-				<a class="wikilink" href="/hypha/{{.}}">{{beautifulName .}}</a>
+    			<a href="/hypha/{{.Name}}">{{beautifulName .Name}}</a>
+    			{{if .Ext}}<span class="media-type-badge">{{.Ext}}</span>{{end}}
+    			{{if .Metadata.Words}}<span class="media-type-badge">{{.Metadata.Words}} words</span>{{end}}
+    			{{if .Metadata.Updated}}<span class="media-type-badge">{{.Metadata.Updated.Format "2006-01-02 15:04"}}</span>{{end}}
 			</li>
         {{end}}
 		</ol>

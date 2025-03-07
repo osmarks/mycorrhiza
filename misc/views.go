@@ -4,6 +4,7 @@ import (
 	"embed"
 
 	"github.com/bouncepaw/mycorrhiza/internal/hyphae"
+	"github.com/bouncepaw/mycorrhiza/internal/backlinks"
 	"github.com/bouncepaw/mycorrhiza/web/viewutil"
 )
 
@@ -27,8 +28,9 @@ func initViews() {
 }
 
 type listDatum struct {
-	Name string
-	Ext  string
+	Name     string
+	Ext  	 string
+	Metadata backlinks.Metadata
 }
 
 type listData struct {
@@ -48,12 +50,12 @@ func viewList(meta viewutil.Meta, entries []listDatum) {
 type titleSearchData struct {
 	*viewutil.BaseData
 	Query            string
-	Results          []string
+	Results          []listDatum
 	MatchedHyphaName string
 	HasExactMatch    bool
 }
 
-func viewTitleSearch(meta viewutil.Meta, query string, hyphaName string, hasExactMatch bool, results []string) {
+func viewTitleSearch(meta viewutil.Meta, query string, hyphaName string, hasExactMatch bool, results []listDatum) {
 	viewutil.ExecutePage(meta, chainTitleSearch, titleSearchData{
 		BaseData:         &viewutil.BaseData{},
 		Query:            query,
