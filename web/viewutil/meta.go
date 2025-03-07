@@ -7,6 +7,7 @@ import (
 
 	"github.com/bouncepaw/mycorrhiza/internal/user"
 	"github.com/bouncepaw/mycorrhiza/l18n"
+	"github.com/bouncepaw/mycorrhiza/util"
 )
 
 // Meta is a bundle of common stuffs used by views, templates.
@@ -15,6 +16,7 @@ type Meta struct {
 	U    *user.User
 	W    io.Writer
 	Addr string
+	Motd string
 
 	// New template additions
 	HeadElements   []template.HTML
@@ -28,6 +30,7 @@ func MetaFrom(w http.ResponseWriter, rq *http.Request) Meta {
 		U:    user.FromRequest(rq),
 		W:    w,
 		Addr: rq.URL.Path,
+		Motd: util.GetMotd(),
 	}
 }
 
