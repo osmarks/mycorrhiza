@@ -112,7 +112,7 @@ func StreamMedia(qw422016 *qt422016.Writer, h *hyphae.MediaHypha, lc *l18n.Local
 
 	`)
 //line mycoopts/view.qtpl:24
-	case ".mp3":
+	case ".mp3", ".m4a", ".opus", ".flac":
 //line mycoopts/view.qtpl:24
 		qw422016.N().S(`
 	<div class="binary-container binary-container_with-audio">
@@ -137,54 +137,71 @@ func StreamMedia(qw422016 *qt422016.Writer, h *hyphae.MediaHypha, lc *l18n.Local
 		qw422016.N().S(`</a></p>
 		</audio>
 	</div>
-	
+
 	`)
 //line mycoopts/view.qtpl:32
-	default:
+	case ".pdf":
 //line mycoopts/view.qtpl:32
 		qw422016.N().S(`
-	<div class="binary-container binary-container_with-nothing">
-		<p><a href="/binary/`)
+	<div class="binary-container binary-container_with-pdf">
+		<iframe src="/binary/`)
 //line mycoopts/view.qtpl:34
 		qw422016.N().S(h.CanonicalName())
 //line mycoopts/view.qtpl:34
+		qw422016.N().S(`" width="100%" height="600">`)
+//line mycoopts/view.qtpl:34
+		qw422016.E().S(lc.Get("ui.media_pdf"))
+//line mycoopts/view.qtpl:34
+		qw422016.N().S(`</iframe>
+	</div>
+
+	`)
+//line mycoopts/view.qtpl:37
+	default:
+//line mycoopts/view.qtpl:37
+		qw422016.N().S(`
+	<div class="binary-container binary-container_with-nothing">
+		<p><a href="/binary/`)
+//line mycoopts/view.qtpl:39
+		qw422016.N().S(h.CanonicalName())
+//line mycoopts/view.qtpl:39
 		qw422016.N().S(`">`)
-//line mycoopts/view.qtpl:34
+//line mycoopts/view.qtpl:39
 		qw422016.E().S(lc.Get("ui.media_download"))
-//line mycoopts/view.qtpl:34
+//line mycoopts/view.qtpl:39
 		qw422016.N().S(`</a></p>
 	</div>
 `)
-//line mycoopts/view.qtpl:36
+//line mycoopts/view.qtpl:41
 	}
-//line mycoopts/view.qtpl:36
+//line mycoopts/view.qtpl:41
 	qw422016.N().S(`
 `)
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 }
 
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 func WriteMedia(qq422016 qtio422016.Writer, h *hyphae.MediaHypha, lc *l18n.Localizer) {
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	StreamMedia(qw422016, h, lc)
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	qt422016.ReleaseWriter(qw422016)
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 }
 
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 func Media(h *hyphae.MediaHypha, lc *l18n.Localizer) string {
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	qb422016 := qt422016.AcquireByteBuffer()
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	WriteMedia(qb422016, h, lc)
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	qs422016 := string(qb422016.B)
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	qt422016.ReleaseByteBuffer(qb422016)
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 	return qs422016
-//line mycoopts/view.qtpl:37
+//line mycoopts/view.qtpl:42
 }
