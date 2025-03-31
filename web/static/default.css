@@ -261,8 +261,8 @@ td { border: #ddd 1px solid; }
 
 /* Dark theme! */
 @media (prefers-color-scheme: dark) {
-html { background: #222; color: #ddd; }
-main,  article, header, .layout-card { background-color: #343434; color: #ddd; }
+html { background: #111; color: #fff; }
+main,  article, header, .layout-card { background-color: #000; color: #fff; }
 
 a, .wikilink_external { color: #f1fa8c; }
 a:visited, .wikilink_external:visited { color: #ffb86c; }
@@ -270,7 +270,7 @@ a:visited, .wikilink_external:visited { color: #ffb86c; }
 
 .prevnext__el, .prevnext__el:visited { color: #ddd; }
 
-.layout-card__title { background-color: #343434; }
+.layout-card__title { background-color: #222; }
 
 .transclusion .transclusion__link, a.shy-link { color: #ddd; }
 
@@ -282,7 +282,7 @@ article .codeblock,
 .history__entry,
 .upload-amnt,
 textarea,
-table { border: 0; background-color: #444444; color: #ddd; }
+table { border: 0; background-color: #222; color: #eee; }
 .transclusion_stand-out { background-color: rgba(68, 68, 68, 0.5); }
 
 .transclusion code,
