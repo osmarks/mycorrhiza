@@ -51,7 +51,7 @@ ol:not(.mycomarkup-doc ol) a:hover { text-decoration: underline; }
 body { display: grid; row-gap: .5rem; }
 header { width: 100%; display: flex; font-family: osmarks-mono, sans-serif; }
 .logo {
-	padding-left: 3em;
+	padding-left: 28px;
 	display: flex;
 }
 .logo img {
@@ -63,9 +63,11 @@ header { width: 100%; display: flex; font-family: osmarks-mono, sans-serif; }
 	align-items: center;
 	display: flex;
 	padding-left: 0.5em;
+	display: none;
 }
 .logo .ominous span {
 	text-align: center;
+	font-size: 0.9em;
 }
 
 .layout-card li { list-style-type: none; }
@@ -95,8 +97,8 @@ header { width: 100%; display: flex; font-family: osmarks-mono, sans-serif; }
 /* No longer a phone but still small screen: center main */
 @media screen and (min-width: 801px) {
 	.main-width { padding: 1rem 2rem; width: 800px; margin: 0 auto; }
+	.top-bar { padding: 1rem 2rem; width: 700px; margin: 0 auto; }
 	.layout-card { width: 800px; margin: 0 auto; }
-	.ominous { display: none; }
 }
 
 
@@ -110,6 +112,7 @@ header { width: 100%; display: flex; font-family: osmarks-mono, sans-serif; }
 	.action-toolbar { grid-column: 2 / span 1; grid-row: 3 / span 1; }
 	.layout-card { width: 100%; margin-left: -.5rem; }
 	.edit-toolbar__buttons {display: grid; }
+	.logo .ominous { display: block; }
 }
 
 @media screen and (min-width: 1150px) {
@@ -120,7 +123,7 @@ header { width: 100%; display: flex; font-family: osmarks-mono, sans-serif; }
 	body { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
 	header { grid-column: 1 / span 3; grid-row: 1 / span 1; margin: 0; }
 	.layout-card {max-width: 18rem;}
-	.main-width { margin: 0 auto; }
+	.main-width, .top-bar { margin: 0 auto; }
 	main.main-width { grid-column: 2 / span 1; grid-row: 2 / span 3; margin: 0; }
 	.markup-toolbar, .help-topics { grid-column: 3 / span 1; margin-left: -.5rem; grid-row: 2 / span 2; }
 	.markup-toolbar { grid-column: 3 / span 1; grid-row: 2 / span 2; margin-left: -.5rem; }
@@ -710,6 +713,7 @@ a.btn_destructive:visited,
 	display: block;
 	margin: 0 .5rem 0 0;
 	padding: 0 .5rem;
+	font-family: osmarks-mono, sans-serif;
 }
 
 .top-bar__hamburger:hover,
