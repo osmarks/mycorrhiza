@@ -52,10 +52,21 @@ var mapMime2Ext = map[string]string{
 	"video/mp4":                "mp4",
 	"application/pdf":          "pdf",
 	"audio/mpeg":               "mp3",
+
+	"audio/mpeg3":              "mp3",
+	"audio/flac":               "flac",
+
+	"audio/wav":                "wav",
+	"audio/vnd.wav":            "wav",
+	"audio/vnd.wave":           "wav",
+	"audio/wave":               "wav",
+	"audio/x-pn-wav":           "wav",
+	"audio/x-wav":              "wav",
 }
 
 var mapExt2Mime = map[string]string{
-	".bin":  "application/octet-stream",
+	".bin": "application/octet-stream",
+
 	".jpg":  "image/jpeg",
 	".jpeg": "image/jpeg",
 	".gif":  "image/gif",
@@ -63,9 +74,12 @@ var mapExt2Mime = map[string]string{
 	".webp": "image/webp",
 	".svg":  "image/svg+xml",
 	".ico":  "image/x-icon",
+
 	".ogg":  "application/ogg",
 	".webm": "video/webm",
-	".mp3":  "audio/mp3",
+	".mp3":  "audio/mpeg",
 	".mp4":  "video/mp4",
 	".pdf":  "application/pdf",
+	".flac": "audio/flac",
+	".wav":  "audio/wav",
 }

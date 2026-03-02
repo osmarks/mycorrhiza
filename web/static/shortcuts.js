@@ -283,6 +283,7 @@ rrh.shortcuts.addGroup(new ShortcutGroup('Common', null, [
 ]))
 
 if (document.body.dataset.rrhAddr.startsWith('/hypha')) {
+<<<<<<< HEAD
     rrh.shortcuts.addGroup(new ShortcutGroup('Page', null, [
         new Shortcut('', $$('article .wikilink'), 'First 9 pages′ links'),
         new Shortcut(['p', 'Alt+ArrowLeft', 'Ctrl+Alt+ArrowLeft'], $('.prevnext__prev'), 'Previous page'),
@@ -291,6 +292,16 @@ if (document.body.dataset.rrhAddr.startsWith('/hypha')) {
         new Shortcut(['c', 'Alt+ArrowDown', 'Ctrl+Alt+ArrowDown'], $('.subhyphae__link'), 'First child page'),
         new Shortcut(['e', isMac ? 'Meta+Enter' : 'Ctrl+Enter'], $('.btn__link_navititle[href^="/edit/"]'), 'Edit this page'),
         new Shortcut('v', $('.hypha-info__link[href^="/hypha/"]'), 'Go to page overview'),
+=======
+    rrh.shortcuts.addGroup(new ShortcutGroup('Hypha', null, [
+        new Shortcut('', $$('article .wikilink'), 'First 9 hypha′s links'),
+        new Shortcut(['p', 'Alt+Shift+ArrowLeft', 'Ctrl+Alt+ArrowLeft'], $('.prevnext__prev'), 'Previous hypha'),
+        new Shortcut(['n', 'Alt+Shift+ArrowRight', 'Ctrl+Alt+ArrowRight'], $('.prevnext__next'), 'Next hypha'),
+        new Shortcut(['s', 'Alt+ArrowUp', 'Ctrl+Alt+ArrowUp'], $$('.navi-title a').slice(1, -1).slice(-1)[0], 'Parent hypha'),
+        new Shortcut(['c', 'Alt+ArrowDown', 'Ctrl+Alt+ArrowDown'], $('.subhyphae__link'), 'First child hypha'),
+        new Shortcut(['e', isMac ? 'Meta+Enter' : 'Ctrl+Enter'], $('.btn__link_navititle[href^="/edit/"]'), 'Edit this hypha'),
+        new Shortcut('v', $('.hypha-info__link[href^="/hypha/"]'), 'Go to hypha′s page'),
+>>>>>>> f8bba997bf560a9aeb954fe9fc8042a30d378a3d
         new Shortcut('a', $('.hypha-info__link[href^="/media/"]'), 'Go to media management'),
         new Shortcut('h', $('.hypha-info__link[href^="/history/"]'), 'Go to history'),
         new Shortcut('r', $('.hypha-info__link[href^="/rename/"]'), 'Rename this page'),
