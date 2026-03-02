@@ -138,7 +138,7 @@ func IndexBacklinks() {
 			backlinkIndex[link][h.CanonicalName()] = struct{}{}
 		}
 		generateMetadata(h, content)
-		if revs, err := history.Revisions(h.CanonicalName()); err == nil {
+		if revs, err := history.LastRevision(h.CanonicalName()); err == nil {
 			// sorted newest first
 			if len(revs) > 0 {
 				updateRevTimestamp(h, revs[0].Time)
@@ -211,26 +211,45 @@ func toLinkSet(xs []string) linkSet {
 	return result
 }
 
-func fetchText(h hyphae.Hypha) string {
-	var path string
+func resolvePath(h hyphae.Hypha) string {
 	switch h := h.(type) {
 	case *hyphae.EmptyHypha:
 		return ""
 	case *hyphae.TextualHypha:
-		path = h.TextFilePath()
+		return h.TextFilePath()
 	case *hyphae.MediaHypha:
 		if !h.HasTextFile() {
 			return ""
 		}
-		path = h.TextFilePath()
+		return h.TextFilePath()
 	}
+	return ""
+}
 
+func fetchText(h hyphae.Hypha) string {
+	path := resolvePath(h)
+	if path == "" {
+		return ""
+	}
 	text, err := os.ReadFile(path)
 	if err != nil {
 		slog.Error("Failed to read file", "path", path, "err", err, "hyphaName", h.CanonicalName())
 		return ""
 	}
 	return string(text)
+}
+
+func fetchMtime(h hyphae.Hypha) time.Time {
+	path := resolvePath(h)
+	if path == "" {
+		return time.Time{}
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		slog.Error("Failed to stat file", "path", path, "err", err, "hyphaName", h.CanonicalName())
+		return time.Time{}
+	}
+	return info.ModTime()
 }
 
 // backlinkIndexOperation is an operation for the backlink index. This operation is executed async-safe.

@@ -226,6 +226,11 @@ func Revisions(hyphaName string) ([]Revision, error) {
 	return revs, err
 }
 
+func LastRevision(hyphaName string) ([]Revision, error) {
+	revs, err := gitLog("-n1", "--", hyphaName+".*")
+	return revs, err
+}
+
 // FileChanged tells you if the file has been changed since the last commit.
 func FileChanged(path string) bool {
 	_, err := gitsh("diff", "--exit-code", path)
