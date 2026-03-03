@@ -3,10 +3,14 @@ package util
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"hash/fnv"
 	"log/slog"
 	"net/http"
 	"strings"
 	"time"
+	insecureRand "math/rand"
+
+	"github.com/hashicorp/golang-lru/v2"
 
 	"github.com/bouncepaw/mycorrhiza/internal/cfg"
 	"github.com/bouncepaw/mycorrhiza/internal/files"
@@ -163,4 +167,100 @@ func GetMotd() string {
 	now := time.Now().UTC().Unix()
 	dayIndex := now / 86400
 	return cfg.Motds[dayIndex%int64(len(cfg.Motds))]
+}
+
+func RequestHeaderFingerprint(rq *http.Request) uint64 {
+	fprintHeaders := []string{"accept", "accept-encoding", "accept-language", "dnt", "host", "user-agent", "x-tls-fp"}
+	hasher := fnv.New64()
+
+	for _, hdr := range fprintHeaders {
+		if value := rq.Header.Get(hdr); value != "" {
+			hasher.Write([]byte(hdr))
+			hasher.Write([]byte(value))
+		}
+	}
+
+	return hasher.Sum64()
+}
+
+var ipLookup *lru.Cache[string, uint64]
+var fprintLookup *lru.Cache[uint64, uint64]
+
+func EstimateTrackingIdentifier(rq *http.Request) uint64 {
+	if ipLookup == nil || fprintLookup == nil {
+		var err error
+		ipLookup, err = lru.New[string, uint64](1<<20)
+		if err != nil {
+			slog.Error("cache create failed?", "error", err)
+		}
+		// golang...
+		fprintLookup, err = lru.New[uint64, uint64](1<<20)
+		if err != nil {
+			slog.Error("cache create failed?", "error", err)
+		}
+	}
+
+	ip := strings.Split(rq.RemoteAddr, ":")[0]
+	if val := rq.Header.Get("x-forwarded-for"); val != "" {
+		ip = val
+	}
+
+	fp := RequestHeaderFingerprint(rq)
+
+	// Try to look up by IP address. If that fails, look up by fingerprint, and update the record for that IP address.
+	// If that also fails, assign a random identifier to both.
+	id := insecureRand.Uint64()
+	if cid, ok := ipLookup.Get(ip); ok {
+		id = cid
+	} else {
+		if cid, ok := fprintLookup.Get(fp); ok {
+			id = cid
+			ipLookup.Add(ip, cid)
+		} else {
+			ipLookup.Add(ip, id)
+			fprintLookup.Add(fp, id)
+		}
+	}
+
+	return id
+}
+
+var visitHistory *lru.Cache[uint64, []string]
+const maxTraceLen int = 64
+
+func EnsureVisitHistoryExists() {
+	if visitHistory == nil {
+		var err error
+		visitHistory, err = lru.New[uint64, []string](1<<18)
+		if err != nil {
+			slog.Error("cache create failed?", "error", err)
+		}
+	}
+}
+
+func WriteTrace(rq *http.Request, hyphaName string) {
+	EnsureVisitHistoryExists()
+
+	trk := EstimateTrackingIdentifier(rq)
+	trace := []string{}
+	if htrace, ok := visitHistory.Get(trk); ok {
+		trace = htrace
+	}
+	trace = append(trace, hyphaName)
+	if len(trace) > maxTraceLen {
+		trace = trace[1:]
+	}
+	visitHistory.Add(trk, trace)
+}
+
+func ReadTrace(rq *http.Request) []string {
+	EnsureVisitHistoryExists()
+
+	trk := EstimateTrackingIdentifier(rq)
+	trace := []string{}
+	if htrace, ok := visitHistory.Get(trk); ok {
+		trace = htrace
+	}
+
+	return trace
 }

@@ -2,12 +2,15 @@
 package misc
 
 import (
+	"bytes"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"math/rand"
 	"mime"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -98,9 +101,49 @@ func handlerUpdateHeaderLinks(w http.ResponseWriter, rq *http.Request) {
 	http.Redirect(w, rq, "/", http.StatusSeeOther)
 }
 
+var hclient http.Client = http.Client{
+	Timeout: 1 * time.Second,
+}
+
+type ModelReq struct {
+	Trace    []string `json:"trace"`
+	AllNames []string `json:"all_names"`
+}
+
+func accessModelBackend(trace []string, allNames []string) (*string, error) {
+	jsonData, err := json.Marshal(ModelReq {
+		Trace: trace,
+		AllNames: allNames,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := hclient.Post(cfg.UserModelBackendURL, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, err
+	}
+
+	reqBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var output string
+	err = json.Unmarshal(reqBody, &output)
+	if err != nil {
+		return nil, err
+	}
+
+	return &output, nil
+}
+
 // handlerRandom redirects to a random hypha.
 func handlerRandom(w http.ResponseWriter, rq *http.Request) {
 	util.PrepareRq(rq)
+
+	trace := util.ReadTrace(rq)
+
 	var (
 		randomHyphaName string
 		amountOfHyphae  = hyphae.Count()
@@ -110,13 +153,28 @@ func handlerRandom(w http.ResponseWriter, rq *http.Request) {
 		viewutil.HttpErr(viewutil.MetaFrom(w, rq), http.StatusNotFound, cfg.HomeHypha, lc.Get("ui.random_no_hyphae_tip"))
 		return
 	}
-	i := rand.Intn(amountOfHyphae)
-	for h := range hyphae.YieldExistingHyphae() {
-		if i == 0 {
-			randomHyphaName = h.CanonicalName()
-		}
-		i--
+
+	hyphae := hyphae.GetAll()
+
+	allNames := []string{}
+
+	for _, h := range hyphae {
+		allNames = append(allNames, h.CanonicalName())
 	}
+
+	var res *string
+	var err error
+	if cfg.UserModelBackendURL != "" {
+		res, err = accessModelBackend(trace, allNames)
+	}
+
+	if err != nil || res == nil || (res != nil && *res == "") {
+		i := rand.Intn(amountOfHyphae)
+		randomHyphaName = hyphae[i].CanonicalName()
+	} else {
+		randomHyphaName = *res
+	}
+
 	http.Redirect(w, rq, "/hypha/"+randomHyphaName, http.StatusSeeOther)
 }
 

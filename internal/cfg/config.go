@@ -50,6 +50,8 @@ var (
 	Motds []string
 
 	OverrideLogin string
+
+	UserModelBackendURL string
 )
 
 // WikiDir is a full path to the wiki storage directory, which also must be a
@@ -59,17 +61,18 @@ var WikiDir string
 // Config represents a Mycorrhiza wiki configuration file. This type is used
 // only when reading configs.
 type Config struct {
-	WikiName      string `comment:"This name appears in the header and on various pages."`
-	NaviTitleIcon string `comment:"This icon is used in the breadcrumbs bar."`
+	WikiName             string `comment:"This name appears in the header and on various pages."`
+	NaviTitleIcon        string `comment:"This icon is used in the breadcrumbs bar."`
 	Hyphae
 	Network
 	Authorization
-	CustomScripts `comment:"You can specify additional scripts to load on different kinds of pages, delimited by a comma ',' sign."`
-	Telegram      `comment:"You can enable Telegram authorization. Follow these instructions: https://core.telegram.org/widgets/login#setting-up-a-bot"`
-	ReplaceFrom   []string
-	ReplaceTo     []string
-	Motds         []string
-	OverrideLogin string
+	CustomScripts       `comment:"You can specify additional scripts to load on different kinds of pages, delimited by a comma ',' sign."`
+	Telegram            `comment:"You can enable Telegram authorization. Follow these instructions: https://core.telegram.org/widgets/login#setting-up-a-bot"`
+	ReplaceFrom         []string
+	ReplaceTo           []string
+	Motds               []string
+	OverrideLogin       string
+	UserModelBackendURL string
 }
 
 // Hyphae is a section of Config which has fields related to special hyphae.
@@ -206,6 +209,7 @@ func ReadConfigFile(path string) error {
 	ReplaceTo = cfg.ReplaceTo
 	Motds = cfg.Motds
 	OverrideLogin = cfg.OverrideLogin
+	UserModelBackendURL = cfg.UserModelBackendURL
 
 	// This URL makes much more sense. If no URL is set or the protocol is forgotten, assume HTTP.
 	if URL == "" {

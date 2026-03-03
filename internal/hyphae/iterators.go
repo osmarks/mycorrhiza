@@ -26,6 +26,14 @@ func YieldExistingHyphae() chan ExistingHypha {
 	return ch
 }
 
+func GetAll() []ExistingHypha {
+	out := []ExistingHypha{}
+	for _, h := range byNames {
+		out = append(out, h)
+	}
+	return out
+}
+
 // FilterHyphaeWithText filters the source channel and yields only those hyphae than have text parts.
 func FilterHyphaeWithText(src chan ExistingHypha) chan ExistingHypha {
 	// TODO: reimplement as a function with a callback?

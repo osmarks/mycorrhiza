@@ -218,6 +218,7 @@ func handlerBinary(w http.ResponseWriter, rq *http.Request) {
 // handlerHypha is the main hypha action that displays the hypha and the binary upload form along with some navigation.
 func handlerHypha(w http.ResponseWriter, rq *http.Request) {
 	util.PrepareRq(rq)
+
 	var (
 		hyphaName                               = util.HyphaNameFromRq(rq, "page", "hypha")
 		h                                       = hyphae.ByName(hyphaName)
@@ -243,6 +244,9 @@ func handlerHypha(w http.ResponseWriter, rq *http.Request) {
 			"IsMediaHypha":            false,
 		}
 	)
+
+	util.WriteTrace(rq, hyphaName)
+
 	slog.Info("reading hypha", "name", h.CanonicalName(), "can edit", data["GivenPermissionToModify"])
 	meta.BodyAttributes = map[string]string{
 		"cats": category_list,
